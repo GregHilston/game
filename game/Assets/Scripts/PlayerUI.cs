@@ -14,7 +14,7 @@ namespace Com.MyCompany.MyGame {
         [Tooltip("Pixel offset from the player target")]
         [SerializeField]
         private Vector3 screenOffset = new Vector3(0f,30f,0f);
-        private PlayerManager target;
+        private MyPlayerManager target;
         float characterControllerHeight = 0f;
         Transform targetTransform;
         Renderer targetRenderer;
@@ -26,7 +26,7 @@ namespace Com.MyCompany.MyGame {
             _canvasGroup = this.GetComponent<CanvasGroup>();
         }
 
-        public void SetTarget(PlayerManager _target) {
+        public void SetTarget(MyPlayerManager _target) {
             if (_target == null) {
                 Debug.LogError("<Color=Red><a>Missing</a></Color> PlayMakerManager target for PlayerUI.SetTarget.", this);
                 return;

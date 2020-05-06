@@ -8,37 +8,37 @@ using System.Collections;
 namespace Com.MyCompany.MyGame {
     /// <summary>
     /// Player manager.
-    /// Handles fire Input and Beams.
+    /// Handles fire Input.
     /// </summary>
-    public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable {
+    public class MyPlayerManager : MonoBehaviourPunCallbacks, IPunObservable {
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
-        public static GameObject LocalPlayerInstance;
+        public static GameObject localPlayerInstance;
         [Tooltip("The current Health of our player")]
         public float Health = 1f;
+        [Tooltip("How fast this player moves")]
+        public float movementSpeed = 5f;
         [Tooltip("The Player's UI GameObject Prefab")]
         [SerializeField]
         public GameObject PlayerUiPrefab;
-        [Tooltip("The Beams GameObject to control")]
+        [Tooltip("The camera this player is using")]
         [SerializeField]
-        private GameObject beams;
+        private Camera camera;
         //True, when the user is firing
         bool IsFiring;
+        // Movement player desires to apply
+        Vector3 movement;
+        // Position of our player's mouse
+        Vector2 mousePosition;
+
 
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
         /// </summary>
         void Awake() {
-            if (beams == null) {
-                Debug.LogError("<Color=Red><a>Missing</a></Color> Beams Reference.", this);
-            } else {
-                beams.SetActive(false);
-            }
-
             // #Important
             // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
-            if (photonView.IsMine)
-            {
-                PlayerManager.LocalPlayerInstance = this.gameObject;
+            if (photonView.IsMine) {
+                MyPlayerManager.localPlayerInstance = this.gameObject;
             }
             // #Critical
             // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
@@ -49,18 +49,6 @@ namespace Com.MyCompany.MyGame {
         /// MonoBehaviour method called on GameObject by Unity during initialization phase.
         /// </summary>
         void Start() {
-            CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
-
-            if (_cameraWork != null) {
-                if (photonView.IsMine) {
-                    Debug.Log("Camera OnStartFollowing()");
-                    _cameraWork.OnStartFollowing();
-                }
-            }
-            else {
-                Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork Component on playerPrefab.", this);
-            }
-
             if (PlayerUiPrefab != null) {
                 GameObject _uiGo =  Instantiate(PlayerUiPrefab);
                 _uiGo.SendMessage ("SetTarget", this, SendMessageOptions.RequireReceiver);
@@ -83,13 +71,9 @@ namespace Com.MyCompany.MyGame {
                 GameManager.Instance.LeaveRoom();
             }
 
-            if (photonView.IsMine) {
+            // so our test scene will handle input just like when we're online
+            if (PhotonNetwork.IsConnected == false || photonView.IsMine) {
                 ProcessInputs();
-            }
-
-            // trigger Beams active state
-            if (beams != null && IsFiring != beams.activeInHierarchy) {
-                beams.SetActive(IsFiring);
             }
         }
 
@@ -97,6 +81,23 @@ namespace Com.MyCompany.MyGame {
         /// Processes the inputs. Maintain a flag representing when the user is pressing Fire.
         /// </summary>
         void ProcessInputs() {
+            // movement
+            Rigidbody rb = GetComponent<Rigidbody>();
+            movement.x = Input.GetAxisRaw("Horizontal");
+            movement.z = Input.GetAxisRaw("Vertical");
+
+            // aiming
+            // Ray ray = this.camera.ScreenPointToRay(Input.mousePosition);
+            // Physics.Raycast(ray, Vector3.down, 100f, var out hit, yourLayerMaskToDetectGround);
+
+            //Need to get vector of mouse pos
+            Vector3 mousePos = camera.ScreenToWorldPoint(Input.mousePosition);
+            // mousePos.y = 0;
+            transform.LookAt(mousePos);
+
+            Debug.Log("mousePos: " + mousePos);
+
+            // firing
             if (Input.GetButtonDown("Fire1")) {
                 if (!IsFiring) {
                     IsFiring = true;
@@ -109,27 +110,27 @@ namespace Com.MyCompany.MyGame {
             }
         }
 
+        void FixedUpdate() {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.MovePosition(rb.position + movement * this.movementSpeed * Time.fixedDeltaTime);
+
+            Vector2 lookDirection = mousePosition - (Vector2)rb.position;
+            float angleToTurnPlayerToLookDirection = Mathf.Atan2(lookDirection.y, lookDirection.x) * Mathf.Rad2Deg - 90f;
+            Debug.Log("angleToTurnPlayerToLookDirection: " + angleToTurnPlayerToLookDirection);
+            //rb.rotation = Quaternion.Euler(0, angleToTurnPlayerToLookDirection, 0);
+        }
+
         /// <summary>
         /// MonoBehaviour method called when the Collider 'other' enters the trigger.
-        /// Affect Health of the Player if the collider is a beam
-        /// Note: when jumping and firing at the same, you'll find that the player's own beam intersects with itself
-        /// One could move the collider further away to prevent this or check if the beam belongs to the player.
         /// </summary>
         void OnTriggerEnter(Collider other) {
             if (!photonView.IsMine) {
                 return;
             }
-            // We are only interested in Beamers
-            // we should be using tags but for the sake of distribution, let's simply check by name.
-            if (!other.name.Contains("Beam")) {
-                return;
-            }
-            Health -= 0.1f;
         }
 
         /// <summary>
         /// MonoBehaviour method called once per frame for every Collider 'other' that is touching the trigger.
-        /// We're going to affect health while the beams are touching the player
         /// </summary>
         /// <param name="other">Other.</param>
         void OnTriggerStay(Collider other) {
@@ -137,13 +138,6 @@ namespace Com.MyCompany.MyGame {
             if (!photonView.IsMine) {
                 return;
             }
-            // We are only interested in Beamers
-            // we should be using tags but for the sake of distribution, let's simply check by name.
-            if (!other.name.Contains("Beam")) {
-                return;
-            }
-            // we slowly affect health when beam is constantly hitting us, so player has to move to prevent death.
-            Health -= 0.1f * Time.deltaTime;
         }
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
@@ -175,8 +169,7 @@ namespace Com.MyCompany.MyGame {
         #endif
 
 
-        void CalledOnLevelWasLoaded(int level)
-        {
+        void CalledOnLevelWasLoaded(int level) {
             // check if we are outside the Arena and if it's the case, spawn around the center of the arena in a safe zone
             if (!Physics.Raycast(transform.position, -Vector3.up, 5f)) {
                 transform.position = new Vector3(0f, 5f, 0f);
