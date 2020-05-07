@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Com.MyCompany.MyGame {
-    public class GunController : MonoBehaviour
-    {
+    public class GunController : MonoBehaviour {
     public Transform weaponHold;
         public Gun startingGun;
-        Gun equippedGun;
+        private Gun equippedGun;
 
         void Start() {
             if (startingGun != null) {
-                EquipGun(startingGun);
+                equipGun(startingGun);
             }
         }
 
-        public void EquipGun(Gun gunToEquip) {
+        public void equipGun(Gun gunToEquip) {
             if (equippedGun != null) {
                 Destroy(equippedGun.gameObject);
             }
@@ -23,9 +22,9 @@ namespace Com.MyCompany.MyGame {
             equippedGun.transform.parent = weaponHold;
         }
 
-        public void Shoot() {
+        public void shoot() {
             if (equippedGun != null) {
-                equippedGun.Shoot();
+                equippedGun.shoot();
             }
         }
     }

@@ -68,7 +68,7 @@ namespace Com.MyCompany.MyGame {
         /// </summary>
         void Update() {
             if (Health <= 0f) {
-                GameManager.Instance.LeaveRoom();
+                GameManager.instance.LeaveRoom();
             }
 
             // so our test scene will handle input just like when we're online

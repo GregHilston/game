@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Com.MyCompany.MyGame {
-    public class Projectile : MonoBehaviour
-    {
-    float speed = 10;
+    public class Projectile : MonoBehaviour{
+        private float speed = 10;
 
-        public void SetSpeed(float newSpeed) {
-            speed = newSpeed;
+        public void setSpeed(float newSpeed) {
+            this.speed = newSpeed;
         }
         
         void Update () {
-            transform.Translate (Vector3.forward * Time.deltaTime * speed);
+            this.transform.Translate(Vector3.forward * Time.deltaTime * this.speed);
         }
     }
 }

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Com.MyCompany.MyGame {
-    public class PlayerController : MonoBehaviour
-    {
+    public class PlayerController : MonoBehaviour {
         Vector3 velocity;
         Rigidbody myRigidbody;
 
@@ -23,7 +22,6 @@ namespace Com.MyCompany.MyGame {
 
         public void FixedUpdate() {
             myRigidbody.MovePosition (myRigidbody.position + velocity * Time.fixedDeltaTime);
-
         }
     }
 }

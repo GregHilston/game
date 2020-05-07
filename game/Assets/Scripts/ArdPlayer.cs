@@ -30,7 +30,7 @@ public class ArdPlayer : MonoBehaviour {
             this.shouldShoot = Input.GetMouseButton(0);
         }
 
-        void Update () {
+        void Update() {
             this.captureMovementInput();
             this.captureWeaponInput();
         }
@@ -52,11 +52,11 @@ public class ArdPlayer : MonoBehaviour {
 
         void processWeaponInput() {
             if (this.shouldShoot) {
-                gunController.Shoot();
+                gunController.shoot();
             }
         }
 
-        void FixedUpdate () {
+        void FixedUpdate() {
             processMovementInput();
             processLookInput();
             processWeaponInput();

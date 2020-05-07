@@ -15,15 +15,15 @@ namespace Com.MyCompany.MyGame {
         [SerializeField]
         private Vector3 screenOffset = new Vector3(0f,30f,0f);
         private MyPlayerManager target;
-        float characterControllerHeight = 0f;
-        Transform targetTransform;
-        Renderer targetRenderer;
-        CanvasGroup _canvasGroup;
-        Vector3 targetPosition;
+        private float characterControllerHeight = 0f;
+        private Transform targetTransform;
+        private Renderer targetRenderer;
+        private CanvasGroup _canvasGroup;
+        private Vector3 targetPosition;
 
         void Awake() {
             this.transform.SetParent(GameObject.Find("Canvas").GetComponent<Transform>(), false);
-            _canvasGroup = this.GetComponent<CanvasGroup>();
+            this._canvasGroup = this.GetComponent<CanvasGroup>();
         }
 
         public void SetTarget(MyPlayerManager _target) {
@@ -32,29 +32,29 @@ namespace Com.MyCompany.MyGame {
                 return;
             }
             // Cache references for efficiency
-            target = _target;
+            this.target = _target;
 
-            targetTransform = this.target.GetComponent<Transform>();
-            targetRenderer = this.target.GetComponent<Renderer>();
+            this.targetTransform = this.target.GetComponent<Transform>();
+            this.targetRenderer = this.target.GetComponent<Renderer>();
             CharacterController characterController = _target.GetComponent<CharacterController> ();
             // Get data from the Player that won't change during the lifetime of this Component
             if (characterController != null) {
-                characterControllerHeight = characterController.height;
+                this.characterControllerHeight = characterController.height;
             }
 
-            if (playerNameText != null) {
-                playerNameText.text = target.photonView.Owner.NickName;
+            if (this.playerNameText != null) {
+                this.playerNameText.text = this.target.photonView.Owner.NickName;
             }
         }
 
         void Update() {
             // Reflect the Player Health
-            if (playerHealthSlider != null) {
-                playerHealthSlider.value = target.Health;
+            if (this.playerHealthSlider != null) {
+                this.playerHealthSlider.value = this.target.Health;
             }
 
             // Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
-            if (target == null) {
+            if (this.target == null) {
                 Destroy(this.gameObject);
                 return;
             }
@@ -62,16 +62,16 @@ namespace Com.MyCompany.MyGame {
 
         void LateUpdate() {
             // Do not show the UI if we are not visible to the camera, thus avoid potential bugs with seeing the UI, but not the player itself.
-                if (targetRenderer!=null) {
-                    this._canvasGroup.alpha = targetRenderer.isVisible ? 1f : 0f;
+                if (this.targetRenderer!=null) {
+                    this._canvasGroup.alpha = this.targetRenderer.isVisible ? 1f : 0f;
                 }
 
             // #Critical
             // Follow the Target GameObject on screen.
-            if (targetTransform != null) {
-                targetPosition = targetTransform.position;
-                targetPosition.y += characterControllerHeight;
-                this.transform.position = Camera.main.WorldToScreenPoint (targetPosition) + screenOffset;
+            if (this.targetTransform != null) {
+                this.targetPosition = this.targetTransform.position;
+                this.targetPosition.y += this.characterControllerHeight;
+                this.transform.position = Camera.main.WorldToScreenPoint (this.targetPosition) + this.screenOffset;
             }
         }
     }

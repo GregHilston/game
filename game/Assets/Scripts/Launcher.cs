@@ -21,12 +21,11 @@ namespace Com.MyCompany.MyGame {
         /// we need to keep track of this to properly adjust the behavior when we receive call back by Photon.
         /// Typically this is used for the OnConnectedToMaster() callback.
         /// </summary>
-        bool isConnecting;
-
+        private bool isConnecting;
         /// <summary>
         /// This client's version number. Users are separated from each other by gameVersion (which allows you to make breaking changes).
         /// </summary>
-        string gameVersion = "1";
+        private string gameVersion = "1";
 
         /// <summary>
         /// MonoBehaviour method called on GameObject by Unity during early initialization phase.
@@ -41,8 +40,8 @@ namespace Com.MyCompany.MyGame {
         /// MonoBehaviour method called on GameObject by Unity during initialization phase.
         /// </summary>
         void Start() {
-            progressLabel.SetActive(false);
-            controlPanel.SetActive(true);
+            this.progressLabel.SetActive(false);
+            this.controlPanel.SetActive(true);
         }
 
         /// <summary>
@@ -51,8 +50,8 @@ namespace Com.MyCompany.MyGame {
         /// - if not yet connected, Connect this application instance to Photon Cloud Network
         /// </summary>
         public void Connect() {
-            progressLabel.SetActive(true);
-            controlPanel.SetActive(false);
+            this.progressLabel.SetActive(true);
+            this.controlPanel.SetActive(false);
 
             // we check if we are connected or not, we join if we are , else we initiate the connection to the server.
             if (PhotonNetwork.IsConnected) {
@@ -60,7 +59,7 @@ namespace Com.MyCompany.MyGame {
                 PhotonNetwork.JoinRandomRoom();
             } else {
                 // keep track of the will to join a room, because when we come back from the game we will get a callback that we are connected, so we need to know what to do then
-                isConnecting = PhotonNetwork.ConnectUsingSettings();
+                this.isConnecting = PhotonNetwork.ConnectUsingSettings();
                 PhotonNetwork.GameVersion = gameVersion;
             }
         }
@@ -81,9 +80,9 @@ namespace Com.MyCompany.MyGame {
         public override void OnDisconnected(DisconnectCause cause) {
             Debug.LogWarningFormat("PUN Basics Tutorial/Launcher: OnDisconnected() was called by PUN with reason {0}", cause);
 
-            progressLabel.SetActive(false);
-            controlPanel.SetActive(true);
-            isConnecting = false;
+            this.progressLabel.SetActive(false);
+            this.controlPanel.SetActive(true);
+            this.isConnecting = false;
         }
 
         public override void OnJoinRandomFailed(short returnCode, string message) {

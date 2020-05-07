@@ -22,8 +22,8 @@ namespace Com.MyCompany.MyGame {
             string defaultName = string.Empty;
             InputField _inputField = this.GetComponent<InputField>();
             if (_inputField != null) {
-                if (PlayerPrefs.HasKey(playerNamePrefKey)) {
-                    defaultName = PlayerPrefs.GetString(playerNamePrefKey);
+                if (PlayerPrefs.HasKey(PlayerNameInputField.playerNamePrefKey)) {
+                    defaultName = PlayerPrefs.GetString(PlayerNameInputField.playerNamePrefKey);
                     _inputField.text = defaultName;
                 }
             }
@@ -41,9 +41,9 @@ namespace Com.MyCompany.MyGame {
                 Debug.LogError("Player Name is null or empty");
                 return;
             }
-            PhotonNetwork.NickName = value;
 
-            PlayerPrefs.SetString(playerNamePrefKey, value);
+            PhotonNetwork.NickName = value;
+            PlayerPrefs.SetString(PlayerNameInputField.playerNamePrefKey, value);
         }
     }
 }
