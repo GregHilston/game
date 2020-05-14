@@ -2,26 +2,70 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Com.MyCompany.MyGame {
+
+namespace com.greghilston {
+    [RequireComponent(typeof(MovementController))]
+    [RequireComponent(typeof(GunController))]
     public class PlayerController : MonoBehaviour {
-        Vector3 velocity;
-        Rigidbody myRigidbody;
+        [Tooltip("The speed of the character")]
+        [SerializeField]
+        private float movementSpeed = 5;
+        private Camera viewCamera;
+        private MovementController movementController;
+        private GunController gunController;
+        private Vector3 moveVelocity;
+        private Vector3 lookPoint;
+        private bool shouldShoot;
 
         void Start () {
-            myRigidbody = GetComponent<Rigidbody> ();
+            this.movementController = GetComponent<MovementController> ();
+            this.gunController = GetComponent<GunController> ();
+            this.viewCamera = Camera.main;
         }
 
-        public void Move(Vector3 _velocity) {
-            velocity = _velocity;
+        void captureMovementInput() {
+            Vector3 moveInput = new Vector3 (Input.GetAxisRaw ("Horizontal"), 0, Input.GetAxisRaw ("Vertical"));
+            this.moveVelocity = moveInput.normalized * movementSpeed;
         }
 
-        public void LookAt(Vector3 lookPoint) {
-            Vector3 heightCorrectedPoint = new Vector3 (lookPoint.x, transform.position.y, lookPoint.z);
-            transform.LookAt (heightCorrectedPoint);
+        void captureLookInput() {
+            Ray ray = viewCamera.ScreenPointToRay (Input.mousePosition);
+            Plane groundPlane = new Plane (Vector3.up, Vector3.zero);
+            float rayDistance;
+            if (groundPlane.Raycast(ray, out rayDistance)) {
+                this.lookPoint = ray.GetPoint(rayDistance);
+                Debug.DrawLine(ray.origin, this.lookPoint, Color.red);
+            }
         }
 
-        public void FixedUpdate() {
-            myRigidbody.MovePosition (myRigidbody.position + velocity * Time.fixedDeltaTime);
+        void captureWeaponInput() {
+            this.shouldShoot = Input.GetMouseButton(0);
+        }
+
+        void Update() {
+            this.captureMovementInput();
+            this.captureLookInput();
+            this.captureWeaponInput();
+        }
+
+        void processMovementInput() {
+            this.movementController.move(this.moveVelocity);
+        }
+
+        void processLookInput() {
+            this.movementController.lookAt(this.lookPoint);
+        }
+
+        void processWeaponInput() {
+            // if (this.shouldShoot) {
+            //     gunController.shoot();
+            // }
+        }
+
+        void FixedUpdate() {
+            this.processMovementInput();
+            this.processLookInput();
+            this.processWeaponInput();
         }
     }
 }

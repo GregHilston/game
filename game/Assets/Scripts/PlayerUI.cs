@@ -3,7 +3,8 @@ using UnityEngine.UI;
 
 using System.Collections;
 
-namespace Com.MyCompany.MyGame {
+namespace com.greghilston {
+    [RequireComponent(typeof(CanvasGroup))]
     public class PlayerUI : MonoBehaviour {
         [Tooltip("UI Text to display Player's Name")]
         [SerializeField]
@@ -14,7 +15,7 @@ namespace Com.MyCompany.MyGame {
         [Tooltip("Pixel offset from the player target")]
         [SerializeField]
         private Vector3 screenOffset = new Vector3(0f,30f,0f);
-        private MyPlayerManager target;
+        private PhotonManager target;
         private float characterControllerHeight = 0f;
         private Transform targetTransform;
         private Renderer targetRenderer;
@@ -26,7 +27,7 @@ namespace Com.MyCompany.MyGame {
             this._canvasGroup = this.GetComponent<CanvasGroup>();
         }
 
-        public void SetTarget(MyPlayerManager _target) {
+        public void SetTarget(PhotonManager _target) {
             if (_target == null) {
                 Debug.LogError("<Color=Red><a>Missing</a></Color> PlayMakerManager target for PlayerUI.SetTarget.", this);
                 return;
@@ -48,16 +49,16 @@ namespace Com.MyCompany.MyGame {
         }
 
         void Update() {
-            // Reflect the Player Health
-            if (this.playerHealthSlider != null) {
-                this.playerHealthSlider.value = this.target.Health;
-            }
+            // // Reflect the Player Health
+            // if (this.playerHealthSlider != null) {
+            //     this.playerHealthSlider.value = this.target.Health;
+            // }
 
-            // Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
-            if (this.target == null) {
-                Destroy(this.gameObject);
-                return;
-            }
+            // // Destroy itself if the target is null, It's a fail safe when Photon is destroying Instances of a Player over the network
+            // if (this.target == null) {
+            //     Destroy(this.gameObject);
+            //     return;
+            // }
         }
 
         void LateUpdate() {

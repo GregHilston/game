@@ -2,7 +2,7 @@
 using Photon.Pun;
 using Photon.Realtime;
 
-namespace Com.MyCompany.MyGame {
+namespace com.greghilston {
     public class Launcher : MonoBehaviourPunCallbacks {
         /// <summary>
         /// The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created.
@@ -97,11 +97,11 @@ namespace Com.MyCompany.MyGame {
 
             // #Critical: We only load if we are the first player, else we rely on `PhotonNetwork.AutomaticallySyncScene` to sync our instance scene.
             if (PhotonNetwork.CurrentRoom.PlayerCount == 1) {
-                Debug.Log("We load the 'Room for 1' ");
+                Debug.Log("We load the 'player_test' ");
 
                 // #Critical
                 // Load the Room Level.
-                PhotonNetwork.LoadLevel("Room for 1");
+                PhotonNetwork.LoadLevel("player_test");
             }
         }
     }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Com.MyCompany.MyGame {
+namespace com.greghilston {
     public class Projectile : MonoBehaviour{
         private float speed = 10;
 
