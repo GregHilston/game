@@ -8,7 +8,7 @@ using System.Collections;
 
 namespace com.greghilston {
     /// <summary>
-    /// Player name input field. Let the user input his name, will appear above the player in the game.
+    /// Responsible for letting the user input his name, which will appear above the player in the game.
     /// </summary>
     [RequireComponent(typeof(InputField))]
     public class PlayerNameInputField : MonoBehaviour {

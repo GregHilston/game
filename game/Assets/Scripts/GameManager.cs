@@ -8,7 +8,7 @@ using Photon.Pun;
 using Photon.Realtime;
 
 namespace com.greghilston {
-    // Responsible for instantiating our Player prefab with Photon and loading the correctlevel
+    /// Responsible for instantiating our Player prefab with Photon and loading the correctlevel
     public class GameManager : MonoBehaviourPunCallbacks {
         public static GameManager instance;
         [Tooltip("The prefab to use for representing the player")]

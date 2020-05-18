@@ -4,6 +4,7 @@ using UnityEngine;
 
 
 namespace com.greghilston {
+    /// Captures user input and requests someone else (MovementCOntroller, GunController, etc...) to act on it
     [RequireComponent(typeof(MovementController))]
     [RequireComponent(typeof(GunController))]
     public class PlayerController : MonoBehaviour {
@@ -13,8 +14,8 @@ namespace com.greghilston {
         private Camera viewCamera;
         private MovementController movementController;
         private GunController gunController;
-        private Vector3 moveVelocity;
-        private Vector3 lookPoint;
+        private Vector3 moveTo;
+        private Vector3 lookAt;
         private bool shouldShoot;
 
         void Start () {
@@ -25,7 +26,8 @@ namespace com.greghilston {
 
         void captureMovementInput() {
             Vector3 moveInput = new Vector3 (Input.GetAxisRaw ("Horizontal"), 0, Input.GetAxisRaw ("Vertical"));
-            this.moveVelocity = moveInput.normalized * movementSpeed;
+            this.moveTo = moveInput.normalized * movementSpeed;
+            Debug.DrawLine(this.transform.position, this.moveTo, Color.green);
         }
 
         void captureLookInput() {
@@ -33,8 +35,9 @@ namespace com.greghilston {
             Plane groundPlane = new Plane (Vector3.up, Vector3.zero);
             float rayDistance;
             if (groundPlane.Raycast(ray, out rayDistance)) {
-                this.lookPoint = ray.GetPoint(rayDistance);
-                Debug.DrawLine(ray.origin, this.lookPoint, Color.red);
+                this.lookAt = ray.GetPoint(rayDistance);
+                Debug.DrawLine(ray.origin, this.lookAt, Color.red);
+                Debug.DrawLine(this.transform.position, this.lookAt, Color.red);
             }
         }
 
@@ -49,11 +52,11 @@ namespace com.greghilston {
         }
 
         void processMovementInput() {
-            this.movementController.move(this.moveVelocity);
+            this.movementController.move(this.moveTo);
         }
 
         void processLookInput() {
-            this.movementController.lookAt(this.lookPoint);
+            this.movementController.lookAt(this.lookAt);
         }
 
         void processWeaponInput() {

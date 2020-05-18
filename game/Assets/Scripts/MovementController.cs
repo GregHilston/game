@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace com.greghilston {
+    /// Handles processing user input, but does not capture it
     [RequireComponent(typeof(Rigidbody))]
     public class MovementController : MonoBehaviour {
         Rigidbody myRigidbody;

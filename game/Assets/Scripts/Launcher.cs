@@ -3,6 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 
 namespace com.greghilston {
+    /// Responsible for initially communicating with the Photon network, joining a room  and loading the correct scene
     public class Launcher : MonoBehaviourPunCallbacks {
         /// <summary>
         /// The maximum number of players per room. When a room is full, it can't be joined by new players, and so new room will be created.
