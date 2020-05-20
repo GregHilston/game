@@ -11,7 +11,8 @@ namespace com.greghilston {
     /// </summary>
     [RequireComponent(typeof(PhotonView))]
     [RequireComponent(typeof(PhotonTransformView))]
-    [RequireComponent(typeof(PlayerController))]
+    [RequireComponent(typeof(MovementController))]
+    [RequireComponent(typeof(LookController))]
     public class PhotonManager : MonoBehaviourPunCallbacks {
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject localPlayerInstance;
@@ -21,7 +22,8 @@ namespace com.greghilston {
             if (photonView.IsMine) {
                 PhotonManager.localPlayerInstance = this.gameObject;
             } else {
-                GetComponent<PlayerController>().enabled = false;
+                GetComponent<MovementController>().enabled = false;
+                GetComponent<LookController>().enabled = false;
             }
             // Critical: we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
             DontDestroyOnLoad(this.gameObject);

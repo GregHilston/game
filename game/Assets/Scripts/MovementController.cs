@@ -1,24 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace com.greghilston {
-    /// Handles processing user input, but does not capture it
-    [RequireComponent(typeof(Rigidbody))]
     public class MovementController : MonoBehaviour {
-        Rigidbody myRigidbody;
-
-        void Start () {
-            myRigidbody = GetComponent<Rigidbody> ();
+        [Tooltip("The speed of the character")]
+        [SerializeField]
+        private float speed;
+        Vector3 moveTo;
+        Rigidbody rb;
+        private void Awake() {
+            rb = GetComponent<Rigidbody>();
         }
 
-        public void move(Vector3 velocity) {
-            myRigidbody.MovePosition(myRigidbody.position + velocity * Time.fixedDeltaTime);
+        void CaptureInput() {
+            Vector3 moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+            moveTo = moveInput.normalized;
+            Debug.DrawLine(transform.position, moveTo, Color.green);
         }
 
-        public void lookAt(Vector3 lookPoint) {
-            Vector3 heightCorrectedPoint = new Vector3(lookPoint.x, transform.position.y, lookPoint.z);
-            transform.LookAt(heightCorrectedPoint);
+        void Update() {
+            CaptureInput();
+        }
+
+        void ProcessMovement() {
+            rb.MovePosition(transform.position + moveTo * speed * Time.deltaTime);
+        }
+
+        void FixedUpdate() {
+            ProcessMovement();
         }
     }
 }
